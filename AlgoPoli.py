@@ -7,7 +7,8 @@ def main():
         print("Error: Cantidad de parametros incorrectos. Intente nuevamente.") 
         return
     archivo = cargar_grafo(sys.argv[1])
-    divulgar(archivo, 1, 7)
+    divulgar_ciclo(archivo, 63, 1)
+    #divulgar(archivo, 1, 7)
     #min_seguimientos(archivo, 1, 7)
     
 def cargar_grafo(nombre_archivo):
@@ -46,5 +47,10 @@ def divulgar(grafo, delincuente, n):
     for clave in orden:
         if orden[clave] < n: resultado += str(clave) + ", "
         else: break
+    resultado = resultado[:-2]
+    print(resultado)
+
+def divulgar_ciclo(grafo, delincuente, n):
+    resultado = grafo.obtener_ciclo_bfs()
     print(resultado)
 main()
