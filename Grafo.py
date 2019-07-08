@@ -28,7 +28,7 @@ class Grafo(object):
     def devolver_valor_vertice(self, vertice):
         if vertice in self.vertices: return self.vertices[vertice]
 
-    def agregar_artista(self, origen, destino):
+    def agregar_arista(self, origen, destino):
         if origen in self.vertices:
             self.vertices[origen].add(destino)
             self.cantidad_artistas += 1
@@ -46,21 +46,22 @@ class Grafo(object):
 
     def bfs(self, origen, funcion = None):
         padres = {}
+        orden = {}
         visitados = set() 
         cola = Deque()
-
         padres[origen] = None
+        orden[origen] = 0
         cola.append(origen)
-        while maxlen(cola):
+        while len(cola) != 0:
             actual = cola.popleft()
             if funcion: funcion(actual)
-            visitados.add(actual)
             for adyacente in self.vertices[actual]:
                 if adyacente not in visitados:
+                    visitados.add(actual)
                     padres[adyacente] = actual
+                    orden[adyacente] = orden[actual] + 1
                     cola.append(adyacente)
-        return padres
-
+        return padres,orden
 
     def dfs(self, origen, funcion = None):
         visitados = set()
