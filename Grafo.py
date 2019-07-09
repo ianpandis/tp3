@@ -6,10 +6,13 @@ class Grafo(object):
         self.cantidad_vertices = 0
         self.cantidad_artistas = 0
 
+    def adyacentes(self, clave):
+        return list(self.vertices.get(clave, None))
+
     def agregar_vertice(self, vertice):
         if vertice not in self.vertices: 
             self.cantidad_vertices += 1
-            self.vertices[vertice] = set()
+            self.vertices[vertice] = {}
 
     def eliminar_vertice(self, vertice):
         if vertice in self.vertices:
@@ -30,7 +33,9 @@ class Grafo(object):
 
     def agregar_arista(self, origen, destino):
         if origen in self.vertices:
-            self.vertices[origen].add(destino)
+            valores = self.vertices.get(origen, {})
+            valores[destino] = None #no tiene pesos
+            self.vertices[origen] = valores
             self.cantidad_artistas += 1
 
     def eliminar_arista(self, origen, destino):
@@ -44,24 +49,25 @@ class Grafo(object):
     def existe_arista(self, origen, destino):
         if origen in self.vertices: return destino in self.vertices[origen]
 
-    def bfs(self, origen, funcion = None):
+    def bfs(grafo, vertice_inicial):
+        visitados = set()
+        distancia = {}
         padres = {}
-        orden = {}
-        visitados = set() 
-        cola = Deque()
-        padres[origen] = None
-        orden[origen] = 0
-        cola.append(origen)
-        while len(cola) != 0:
-            actual = cola.popleft()
-            if funcion: funcion(actual)
-            for adyacente in self.vertices[actual]:
-                if adyacente not in visitados:
-                    visitados.add(actual)
-                    padres[adyacente] = actual
-                    orden[adyacente] = orden[actual] + 1
-                    cola.append(adyacente)
-        return padres,orden
+        q = Deque()
+        q.append(vertice_inicial)
+        padres[vertice_inicial] = None
+        visitados.add(vertice_inicial)
+        distancia[vertice_inicial] = 0
+
+        while(len(q) > 0):
+            v = q.popleft()
+            for w in grafo.adyacentes(v):
+                if w not in visitados:
+                    visitados.add(w)
+                    distancia[w] = distancia[v] + 1
+                    padres[w] = v
+                    q.append(w)
+        return distancia, padres
 
     def reconstruir_ciclo(padre, inicio, fin):
         v = fin
@@ -100,7 +106,6 @@ class Grafo(object):
             if ciclo is not None:
                 return ciclo
         return None
-
 
     def dfs(self, origen, funcion = None):
         visitados = set()
