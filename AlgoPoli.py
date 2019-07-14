@@ -8,7 +8,8 @@ CANT_ITERACIONES_COMUNIDADES = 20
 
 def main():
     archivo = cargar_grafo(sys.argv[1])
-    mas_imp(archivo, 3)
+    divulgar_ciclo(archivo, 74, 5)
+    #mas_imp(archivo, 3)
     #cfc(archivo)
     #divulgar(archivo, 30, 4)
     #min_seguimientos(archivo, 30, 12)
@@ -95,7 +96,7 @@ def dfs_cfc(vertices, vertice, visitados, orden, lista1, lista2, cfcs, en_cfs):
             nueva_cfc.append(aux)
         cfcs.append(nueva_cfc)
 
-#LABURANDO ACA
+#FUNCIONA OK?
 def random_walks(grafo, origen, largo):
     recorrido = {}
     v = origen
@@ -122,16 +123,15 @@ def mas_imp(grafo, cantidad):
     apariciones = sorted(apariciones.items(), key = operator.itemgetter(1), reverse = True)
     for index, delincuente in enumerate(apariciones):
         if index >= cantidad: break
-        print(apariciones[index])
         resultado += str(apariciones[index][0]) + ", "
     resultado = resultado[:-2]
-    print(resultado)
+    return resultado
     
-
+#LABURANDO ACA
 def divulgar_ciclo(grafo, delincuente, n):
-    resultado = grafo.obtener_ciclo_bfs()
+    resultado = grafo.obtener_ciclo_dfs(delincuente)
     print(resultado)
-        
+
 def comunidades(grafo, n):
     label = {}
     #inicio el dicc label con clave vertice y valor su indice en el dicc de grafo.vertices

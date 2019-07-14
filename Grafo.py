@@ -49,7 +49,7 @@ class Grafo(object):
     def existe_arista(self, origen, destino):
         if origen in self.vertices: return destino in self.vertices[origen]
 
-    def bfs(grafo, vertice_inicial):
+    def bfs(self, vertice_inicial):
         visitados = set()
         distancia = {}
         padres = {}
@@ -69,43 +69,34 @@ class Grafo(object):
                     q.append(w)
         return distancia, padres
 
-    def reconstruir_ciclo(padre, inicio, fin):
+    def obtener_ciclo_dfs(self, inicio):
+        visitados = {}
+        padres = {}
+        ciclos = []
+        ciclo = self.dfs_ciclo(inicio, visitados, padres, ciclos)
+        return ciclos
+
+    def dfs_ciclo(self, v, visitados, padres, ciclos): 
+        visitados[v] = True
+        for w in self.adyacentes(v):
+            if w in visitados:
+                if w != padres[v]:
+                    ciclos.append(self.reconstruir_ciclo(padres, w, v))
+            else:
+                padres[w] = v
+                ciclo = self.dfs_ciclo(w, visitados, padres, ciclos)
+                if ciclo is not None:
+                    return ciclo
+        return ciclos
+
+    def reconstruir_ciclo(self, padres, inicio, fin):
         v = fin
         camino = []
         while v != inicio:
-            camino.append(v)
-            v = padre[v]
-        camino.append(inicio)
-        return camino.invertir()        
-        
-    def bfs_ciclo(self, v, visitados):
-        q = Cola()
-        q.encolar(v)
-        visitados[v] = True
-        padre = {} 
-        padre[v] = None
-
-        while not q.esta_vacia():
-            v = q.desencolar()
-            for w in self.vertices.adyacentes(v):
-                if w in visitados:
-                    if w != padre[v]:
-                        return reconstruir_ciclo(padre, w, v)
-                else:
-                    q.encolar(w)
-                    visitados[v] = True
-                    padre[w] = v
-
-        return None
-
-    def obtener_ciclo_bfs(self):
-        visitados = {}
-        for v in self.vertices:
-            if v not in visitados:
-                ciclo = bfs_ciclo(self.vertices, v, visitados)
-            if ciclo is not None:
-                return ciclo
-        return None
+            camino.insert(0, v)
+            v = padres[v]
+        camino.insert(0, inicio)
+        return camino  
 
     def dfs(self, origen, funcion = None):
         visitados = set()
