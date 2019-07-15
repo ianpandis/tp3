@@ -3,96 +3,33 @@ from Grafo import Grafo
 import sys
 import random
 import collections
+from biblioteca import *
 import operator
 CANT_ITERACIONES_COMUNIDADES = 20
 
 def main():
     archivo = cargar_grafo(sys.argv[1])
-<<<<<<< HEAD
-    divulgar_ciclo(archivo, 74, 5)
-    #mas_imp(archivo, 3)
-    #cfc(archivo)
-    #divulgar(archivo, 30, 4)
-    #min_seguimientos(archivo, 30, 12)
-    
-#FUNDIONA OK
-=======
-    #min_seguimientos(archivo, 19, 33)  #ANDA JOYA
-    #mas_imp(archivo, 10)               #ANDA JOYA                             
-    #persecucion(archivo, [19,10,7], 5) #ANDA JOYA
-    #comunidades(archivo, 5)            #ANDA JOYA
-    #divulgar(archivo, 30, 1)           #ANDA JOYA
-    #divulgar_ciclo(FALTA HACER)
-    #cfc(archivo)                       #ANDA JOYA
+    print("Comandos disponibles:\n\tmin_seguimientos origen destino\n\tmas_imp cant\n\tpersecucion del1,del2,del3,...,delN K\n\tcomunidades n\n\tdivulgar delincuente n\n\tdivulgar_ciclo delincuente n\n\tcfc")
+    comando = input("Ingrese un comando o 't' para terminar:").split()
+    while comando[0] != "t":
+        if comando[0] == "min_seguimientos":
+            print(min_seguimientos(archivo, int(comando[1]),int(comando[2])))
+        if comando[0] == "mas_imp":
+            print(mas_imp(archivo, int(comando[1])))
+        if comando[0] == "persecucion":
+            delincuentes = comando[1].split(",")
+            delincuentes = [int(i) for i in delincuentes]
+            print(persecucion(archivo, delincuentes, int(comando[2])))
+        if comando[0] == "comunidades":
+            comunidades(archivo, int(comando[1]))
+        if comando[0] == "divulgar":
+            print(divulgar(archivo, int(comando[1]), int(comando[2])))
+        if comando[0] == "divulgar_ciclo":
+            print(divulgar_ciclo(archivo, int(comando[1]),int(comando[2])))
+        if comando[0] == "cfc":
+            cfc(archivo)
+        comando = input("Ingrese un comando o 't' para terminar:").split()
 
-
-""" Changelog: cambie de lugar el print y el return de mas_imp y min_seguimientos para persecucion"""
-
-"""*********************************************************************************"""   
-"""*********************************************************************************"""
-"""**************************FUNCIONES AUXILIARES***********************************"""
-"""*********************************************************************************"""
-"""*********************************************************************************"""
-
-#FUNCIONA OK
->>>>>>> bc4024dd75f6a98bb51740fd50a8c54790d03197
-def cargar_grafo(nombre_archivo):
-    grafo = Grafo()
-    with open(nombre_archivo) as delincuentes:
-        delincuentes_tsv = csv.reader(delincuentes, delimiter="\t")
-        for linea in delincuentes_tsv:
-            grafo.agregar_vertice(int(linea[0]))
-            if linea[0] == linea[1]: continue
-            grafo.agregar_vertice(int(linea[1]))
-            grafo.agregar_arista(int(linea[0]), int(linea[1]))                
-    return grafo
-
-def max_freq(lista):
-    resultado = collections.Counter(lista)
-    etiqueta_que_mas_se_repite = -1
-    cant_veces = -1
-    for clave,valor in resultado.items():
-        if valor > cant_veces:
-            cant_veces = valor
-            etiqueta_que_mas_se_repite = clave
-    if etiqueta_que_mas_se_repite == -1: return None
-    return etiqueta_que_mas_se_repite
-
-def dfs_cfc(vertices, vertice, visitados, orden, lista1, lista2, cfcs, en_cfs):
-    visitados.add(vertice)
-    lista1.append(vertice)
-    lista2.append(vertice)
-    for adyacente in vertices[vertice]:
-        if adyacente not in visitados:
-            orden[adyacente] = orden[vertice] + 1
-            dfs_cfc(vertices, adyacente, visitados, orden, lista1, lista2, cfcs, en_cfs)
-        elif adyacente not in en_cfs:
-            while orden[lista1[-1]] > orden[adyacente]:
-                lista1.pop()
-
-    if lista1[-1] == vertice:
-        lista1.pop()
-        aux = None
-        nueva_cfc = []
-        while aux != vertice:
-            aux = lista2.pop()
-            en_cfs.add(aux)
-            nueva_cfc.append(aux)
-        cfcs.append(nueva_cfc)
-
-#FUNCIONA OK?
-def random_walks(grafo, origen, largo):
-    recorrido = {}
-    v = origen
-    for i in range(largo):
-        adyacentes = grafo.adyacentes(v)
-        if not v in recorrido: 
-            recorrido[v] = 1
-        else: 
-            recorrido[v] += 1
-        if len(adyacentes) > 0: 
-            v = random.choice(adyacentes)
-    return recorrido
 
 """*********************************************************************************"""
 """*********************************************************************************"""
@@ -104,7 +41,7 @@ def random_walks(grafo, origen, largo):
 def min_seguimientos(grafo, origen, destino):
     resultado = []
     cadena = ""
-    orden, padres = grafo.bfs(origen)
+    orden, padres = bfs(grafo,origen)
     if destino not in padres:
         return "Seguimiento Imposible"
         print("Seguimiento Imposible")
@@ -118,7 +55,6 @@ def min_seguimientos(grafo, origen, destino):
         cadena += str(resultado[indice])
         if indice + 1 != largo_resultado: cadena += " -> "
     return cadena
-    print(cadena)
     
 
 def mas_imp(grafo, cantidad):
@@ -137,15 +73,16 @@ def mas_imp(grafo, cantidad):
         resultado += str(apariciones[index][0]) + ", "
     resultado = resultado[:-2]
     return resultado
-<<<<<<< HEAD
     
 #LABURANDO ACA
-def divulgar_ciclo(grafo, delincuente, n):
-    resultado = grafo.obtener_ciclo_dfs(delincuente)
-    print(resultado)
-=======
-    print(resultado)
-    
+def divulgar_ciclo(grafo, origen, largo):
+    d = ciclo_n(grafo, origen, largo)
+    d.reverse()
+    res=""
+    for x in d:
+        res+=str(x)
+        res+=" -> "
+    return res[:-4]
 
 def persecucion(grafo, delincuentes, k):
     lista_mas_imp = mas_imp(grafo,k).split(", ")
@@ -162,8 +99,7 @@ def persecucion(grafo, delincuentes, k):
                 continue
             if len(res_aux) <= len(res):
                 res = res_aux
-    print(res)
->>>>>>> bc4024dd75f6a98bb51740fd50a8c54790d03197
+    return res
 
 def comunidades(grafo, n):
     label = {}
@@ -216,18 +152,13 @@ def cfc(grafo):
         
 #FUNCIONA OK
 def divulgar(grafo, delincuente, n):
-    distancias,padres = grafo.bfs(delincuente)
+    distancias,padres = bfs(grafo, delincuente)
     resultado = ""
     for vertice in distancias:
         if vertice == delincuente: continue
         if distancias[vertice] <= n: resultado += str(vertice) + ", "
     resultado = resultado[:-2]
-    print(resultado)
+    return resultado
     
-
-def divulgar_ciclo(grafo, delincuente, n):
-    resultado = grafo.obtener_ciclo_bfs()
-    print(resultado)
-        
 
 main()
