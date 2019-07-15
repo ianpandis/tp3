@@ -9,9 +9,9 @@ CANT_ITERACIONES_COMUNIDADES = 20
 
 def main():
     archivo = cargar_grafo(sys.argv[1])
-    print("Comandos disponibles:\n\tmin_seguimientos origen destino\n\tmas_imp cant\n\tpersecucion del1,del2,del3,...,delN K\n\tcomunidades n\n\tdivulgar delincuente n\n\tdivulgar_ciclo delincuente n\n\tcfc")
-    comando = input("Ingrese un comando o 't' para terminar:").split()
-    while comando[0] != "t":
+    f = open(sys.argv[2]) if len(sys.argv) > 2 else sys.stdin    
+    for line in f:
+        comando = line.split()
         if comando[0] == "min_seguimientos":
             print(min_seguimientos(archivo, int(comando[1]),int(comando[2])))
         if comando[0] == "mas_imp":
@@ -28,7 +28,6 @@ def main():
             print(divulgar_ciclo(archivo, int(comando[1]),int(comando[2])))
         if comando[0] == "cfc":
             cfc(archivo)
-        comando = input("Ingrese un comando o 't' para terminar:").split()
 
 
 """*********************************************************************************"""
