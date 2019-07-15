@@ -1,5 +1,5 @@
 import csv
-from Grafo import Grafo
+from grafo import *
 import sys
 import random
 import collections
@@ -95,15 +95,21 @@ def ciclo_n(grafo, origen, largo):
     return respuesta
 
 def _ciclo_n(grafo, v, largo, visitados, respuesta, principio): 
-    if len(respuesta)-1 > largo: return False
-    if v == principio and len(respuesta)-1 == largo: return respuesta
+    if len(respuesta) == largo:
+        if v in grafo.adyacentes(principio):
+            respuesta.append(principio)
+            return respuesta
+        return False
+    if len(respuesta)-1 >= largo: return False
     for w in grafo.adyacentes(v):
+        if w in visitados and w !=  principio:continue
+        if w == principio and len(respuesta) != largo:continue
         respuesta.append(w)
         visitados.add(w)
         if _ciclo_n(grafo, w, largo, visitados, respuesta, principio): return respuesta
         respuesta.pop()
-    return False
 
+    return False
 
 def orden_topologico(grafo):
     grados = {}

@@ -1,5 +1,6 @@
+#!/usr/bin/python3
 import csv
-from Grafo import Grafo
+from grafo import *
 import sys
 import random
 import collections
@@ -42,8 +43,7 @@ def min_seguimientos(grafo, origen, destino):
     cadena = ""
     orden, padres = bfs(grafo,origen)
     if destino not in padres:
-        return "Seguimiento Imposible"
-        print("Seguimiento Imposible")
+        return "Seguimiento imposible"
     resultado.insert(0, destino)
     padre = padres[destino]
     while padre != None:
@@ -54,7 +54,6 @@ def min_seguimientos(grafo, origen, destino):
         cadena += str(resultado[indice])
         if indice + 1 != largo_resultado: cadena += " -> "
     return cadena
-    
 
 def mas_imp(grafo, cantidad):
     apariciones = {}
@@ -76,7 +75,6 @@ def mas_imp(grafo, cantidad):
 #LABURANDO ACA
 def divulgar_ciclo(grafo, origen, largo):
     d = ciclo_n(grafo, origen, largo)
-    d.reverse()
     res=""
     for x in d:
         res+=str(x)
@@ -91,7 +89,7 @@ def persecucion(grafo, delincuentes, k):
     for delincuente in delincuentes:
         for mas_importante in lista_mas_imp:
             res_aux = min_seguimientos(grafo, int(delincuente), int(mas_importante))
-            if res_aux == "Seguimiento Imposible":
+            if res_aux == "Seguimiento imposible":
                 continue
             if len(res) == 1: 
                 res = res_aux
