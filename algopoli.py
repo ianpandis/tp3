@@ -75,6 +75,7 @@ def mas_imp(grafo, cantidad):
 #LABURANDO ACA
 def divulgar_ciclo(grafo, origen, largo):
     d = ciclo_n(grafo, origen, largo)
+    if len(d) == 0: return "No se encontro recorrido"
     res=""
     for x in d:
         res+=str(x)

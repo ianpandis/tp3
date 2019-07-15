@@ -91,24 +91,28 @@ def ciclo_n(grafo, origen, largo):
     respuesta = Deque()
     respuesta.append(origen)
     visitados.add(origen)
-    _ciclo_n(grafo, origen, largo, visitados, respuesta, origen)
+    if _ciclo_n(grafo, origen, largo, visitados, respuesta, origen):return respuesta
+    respuesta.pop()
     return respuesta
 
 def _ciclo_n(grafo, v, largo, visitados, respuesta, principio): 
+    #if len(respuesta)-1 > largo: return False
     if len(respuesta) == largo:
-        if v in grafo.adyacentes(principio):
+        if principio in grafo.adyacentes(v):
             respuesta.append(principio)
             return respuesta
         return False
-    if len(respuesta)-1 >= largo: return False
+    if len(respuesta)-1 > largo: return False
     for w in grafo.adyacentes(v):
-        if w in visitados and w !=  principio:continue
-        if w == principio and len(respuesta) != largo:continue
+        if w in visitados:continue
         respuesta.append(w)
         visitados.add(w)
+        #print(respuesta)
         if _ciclo_n(grafo, w, largo, visitados, respuesta, principio): return respuesta
         respuesta.pop()
-
+        #visitados.remove(w)
+        #else:
+        #    if v == principio and len(respuesta)-1 == largo: return respuesta
     return False
 
 def orden_topologico(grafo):
