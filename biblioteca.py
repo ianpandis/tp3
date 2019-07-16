@@ -52,7 +52,7 @@ def dfs_cfc(grafo, vertice, visitados, orden, lista1, pila2, cfcs, en_cfs):
 def random_walks(grafo, origen, largo):
     recorrido = {}
     v = origen
-    for i in range(largo):
+    for i in range(1, largo):
         if not v in recorrido: 
             recorrido[v] = 1
         else: 
@@ -75,7 +75,7 @@ def bfs(grafo, vertice_inicial):
     visitados.add(vertice_inicial)
     distancia[vertice_inicial] = 0
 
-    while(len(q) > 0):
+    while q:
         v = q.popleft()
         for w in grafo.adyacentes(v):
             if w not in visitados:
@@ -90,25 +90,28 @@ def ciclo_n(grafo, origen, largo):
     respuesta = Deque()
     respuesta.append(origen)
     visitados.add(origen)
-    if _ciclo_n(grafo, origen, largo, visitados, respuesta, origen):return respuesta
+    if _ciclo_n(grafo, origen, largo, visitados, respuesta, origen, 1):return respuesta
     respuesta.pop()
     return respuesta
 
-def _ciclo_n(grafo, v, largo, visitados, respuesta, principio): 
+def _ciclo_n(grafo, v, largo, visitados, respuesta, principio, cantidad): 
     #if len(respuesta)-1 > largo: return False
-    if len(respuesta) == largo:
-        if principio in grafo.adyacentes(v):
+    adyacentes = grafo.adyacentes(v)
+    if cantidad == largo:
+        if principio in adyacentes:
             respuesta.append(principio)
             return respuesta
         return False
-    if len(respuesta)-1 > largo: return False
-    for w in grafo.adyacentes(v):
+    if cantidad-1 > largo: return False
+    for w in adyacentes:
         if w in visitados:continue
         respuesta.append(w)
         visitados.add(w)
+        cantidad += 1
         #print(respuesta)
-        if _ciclo_n(grafo, w, largo, visitados, respuesta, principio): return respuesta
+        if _ciclo_n(grafo, w, largo, visitados, respuesta, principio, cantidad): return respuesta
         respuesta.pop()
+        cantidad -= 1
         #visitados.remove(w)
         #else:
         #    if v == principio and len(respuesta)-1 == largo: return respuesta

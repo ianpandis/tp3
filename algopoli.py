@@ -6,8 +6,7 @@ import random
 import collections
 from biblioteca import *
 import operator
-import time
-CANT_ITERACIONES_COMUNIDADES = 10
+CANT_ITERACIONES_COMUNIDADES = 5
 
 def main():
     archivo = cargar_grafo(sys.argv[1])
@@ -19,11 +18,14 @@ def main():
         if comando[0] == "mas_imp":
             print(mas_imp(archivo, int(comando[1])))
         if comando[0] == "persecucion":
-            delincuentes = comando[1].split(",")
-            delincuentes = [int(i) for i in delincuentes]
+            delincuentes = [int(i) for i in comando[1].split(",")]
             print(persecucion(archivo, delincuentes, int(comando[2])))
         if comando[0] == "divulgar":
             print(divulgar(archivo, int(comando[1]), int(comando[2])))
+        if comando[0] == "comunidades":
+            comunidades(archivo, int(comando[1]))          
+        if comando[0] == "divulgar_ciclo":
+            print(divulgar_ciclo(archivo, int(comando[1]),int(comando[2])))
         if comando[0] == "cfc":
             cfc(archivo)
 
@@ -36,27 +38,27 @@ def main():
 
 #FUNCIONA OK
 def min_seguimientos(grafo, origen, destino):
-    resultado = Deque()
+    resultado = []
     cadena = ""
     orden, padres = bfs(grafo,origen)
     if destino not in padres:
         return "Seguimiento imposible"
-    resultado.appendleft(destino)
+    resultado.insert(0, destino)
     padre = padres[destino]
     while padre != None:
-        resultado.appendleft(padre)
+        resultado.insert(0, padre)
         padre = padres[padre]
-    while resultado:
-        cadena += str(resultado.popleft())
-        if len(resultado) != 1: cadena += " -> "
-
+    largo_resultado = len(resultado)
+    for indice in range(largo_resultado):
+        cadena += str(resultado[indice])
+        if indice + 1 != largo_resultado: cadena += " -> "
     return cadena
 
 def mas_imp(grafo, cantidad):
     apariciones = {}
     resultado = ""
     for actual in grafo.vertices:
-        recorridos = random_walks(grafo, actual, 300)
+        recorridos = random_walks(grafo, actual, 100)
         for v, aparicion in recorridos.items(): 
             if not v in apariciones:
                 apariciones[v] = aparicion
@@ -88,16 +90,16 @@ def persecucion(grafo, delincuentes, k):
         for mas_importante in lista_mas_imp:
             res_aux = min_seguimientos(grafo, int(delincuente), int(mas_importante))
             if res_aux == "Seguimiento imposible":
-                res = "Seguimiento imposible"
-                return res
-            if len(res) == 1: 
+                return "Seguimiento imposible"
+            largo_res = len(res)
+            if largo_res == 1: 
                 res = res_aux
                 continue
-            if len(res_aux) <= len(res):
+            if len(res_aux) <= largo_res:
                 res = res_aux
     return res
 
-"""def comunidades(grafo, n):
+def comunidades(grafo, n):
     label = {}
     #inicio el dicc label con clave vertice y valor su indice en el dicc de grafo.vertices
     for index, clave in enumerate(grafo.vertices): label[clave] = index
@@ -127,7 +129,7 @@ def persecucion(grafo, delincuentes, k):
         if len(comunidad) >= n:
             print("Comunidad " + str(contador) + ": " + str(comunidad))
             contador += 1
-"""
+
 #FUNCIONA OK
 def cfc(grafo):
     visitados = set()
@@ -157,6 +159,4 @@ def divulgar(grafo, delincuente, n):
     resultado = resultado[:-2]
     return resultado
     
-start_time = time.time()
 main()
-print("---- %s secons ----" % (time.time() - start_time))
