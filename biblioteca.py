@@ -5,16 +5,13 @@ import random
 import collections
 from collections import deque as Deque
 import operator
-
-
-
+ 
 def cargar_grafo(nombre_archivo):
     grafo = Grafo()
     with open(nombre_archivo) as delincuentes:
         delincuentes_tsv = csv.reader(delincuentes, delimiter="\t")
         for linea in delincuentes_tsv:
             grafo.agregar_vertice(int(linea[0]))
-            if linea[0] == linea[1]: continue
             grafo.agregar_vertice(int(linea[1]))
             grafo.agregar_arista(int(linea[0]), int(linea[1]))                
     return grafo
@@ -30,14 +27,14 @@ def max_freq(lista):
     if etiqueta_que_mas_se_repite == -1: return None
     return etiqueta_que_mas_se_repite
 
-def dfs_cfc(vertices, vertice, visitados, orden, lista1, lista2, cfcs, en_cfs):
+def dfs_cfc(grafo, vertice, visitados, orden, lista1, pila2, cfcs, en_cfs):
     visitados.add(vertice)
     lista1.append(vertice)
-    lista2.append(vertice)
-    for adyacente in vertices[vertice]:
+    pila2.append(vertice)
+    for adyacente in grafo.adyacentes(vertice):
         if adyacente not in visitados:
             orden[adyacente] = orden[vertice] + 1
-            dfs_cfc(vertices, adyacente, visitados, orden, lista1, lista2, cfcs, en_cfs)
+            dfs_cfc(grafo, adyacente, visitados, orden, lista1, pila2, cfcs, en_cfs)
         elif adyacente not in en_cfs:
             while orden[lista1[-1]] > orden[adyacente]:
                 lista1.pop()
@@ -47,7 +44,7 @@ def dfs_cfc(vertices, vertice, visitados, orden, lista1, lista2, cfcs, en_cfs):
         aux = None
         nueva_cfc = []
         while aux != vertice:
-            aux = lista2.pop()
+            aux = pila2.pop()
             en_cfs.add(aux)
             nueva_cfc.append(aux)
         cfcs.append(nueva_cfc)
@@ -56,13 +53,15 @@ def random_walks(grafo, origen, largo):
     recorrido = {}
     v = origen
     for i in range(largo):
-        adyacentes = grafo.adyacentes(v)
         if not v in recorrido: 
             recorrido[v] = 1
         else: 
             recorrido[v] += 1
+        adyacentes = grafo.adyacentes(v)
         if len(adyacentes) > 0: 
             v = random.choice(adyacentes)
+        else:
+            break
     return recorrido
 
 

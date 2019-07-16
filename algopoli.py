@@ -6,7 +6,8 @@ import random
 import collections
 from biblioteca import *
 import operator
-CANT_ITERACIONES_COMUNIDADES = 20
+import time
+CANT_ITERACIONES_COMUNIDADES = 10
 
 def main():
     archivo = cargar_grafo(sys.argv[1])
@@ -21,12 +22,8 @@ def main():
             delincuentes = comando[1].split(",")
             delincuentes = [int(i) for i in delincuentes]
             print(persecucion(archivo, delincuentes, int(comando[2])))
-        if comando[0] == "comunidades":
-            comunidades(archivo, int(comando[1]))
         if comando[0] == "divulgar":
             print(divulgar(archivo, int(comando[1]), int(comando[2])))
-        if comando[0] == "divulgar_ciclo":
-            print(divulgar_ciclo(archivo, int(comando[1]),int(comando[2])))
         if comando[0] == "cfc":
             cfc(archivo)
 
@@ -39,27 +36,27 @@ def main():
 
 #FUNCIONA OK
 def min_seguimientos(grafo, origen, destino):
-    resultado = []
+    resultado = Deque()
     cadena = ""
     orden, padres = bfs(grafo,origen)
     if destino not in padres:
         return "Seguimiento imposible"
-    resultado.insert(0, destino)
+    resultado.appendleft(destino)
     padre = padres[destino]
     while padre != None:
-        resultado.insert(0, padre)
+        resultado.appendleft(padre)
         padre = padres[padre]
-    largo_resultado = len(resultado)
-    for indice in range(largo_resultado):
-        cadena += str(resultado[indice])
-        if indice + 1 != largo_resultado: cadena += " -> "
+    while resultado:
+        cadena += str(resultado.popleft())
+        if len(resultado) != 1: cadena += " -> "
+
     return cadena
 
 def mas_imp(grafo, cantidad):
     apariciones = {}
     resultado = ""
     for actual in grafo.vertices:
-        recorridos = random_walks(grafo, actual, 100)
+        recorridos = random_walks(grafo, actual, 300)
         for v, aparicion in recorridos.items(): 
             if not v in apariciones:
                 apariciones[v] = aparicion
@@ -91,7 +88,8 @@ def persecucion(grafo, delincuentes, k):
         for mas_importante in lista_mas_imp:
             res_aux = min_seguimientos(grafo, int(delincuente), int(mas_importante))
             if res_aux == "Seguimiento imposible":
-                continue
+                res = "Seguimiento imposible"
+                return res
             if len(res) == 1: 
                 res = res_aux
                 continue
@@ -99,17 +97,18 @@ def persecucion(grafo, delincuentes, k):
                 res = res_aux
     return res
 
-def comunidades(grafo, n):
+"""def comunidades(grafo, n):
     label = {}
     #inicio el dicc label con clave vertice y valor su indice en el dicc de grafo.vertices
     for index, clave in enumerate(grafo.vertices): label[clave] = index
-    for i in range(CANT_ITERACIONES_COMUNIDADES): #esta es la parte de iterar varias veces
-        claves = list(label.keys())
-        random.shuffle(claves)
-        for x in range(len(claves)): #voy actualizando el valor del vertice en el dicc con la max_freq de los labesl de sus adyacentes
+    claves = list(label.keys())
+    vertices_random = random.choices(claves, k=CANT_ITERACIONES_COMUNIDADES)
+    largo_claves = len(claves)
+    for vertice in vertices_random:
+        for x in range(largo_claves): #voy actualizando el valor del vertice en el dicc con la max_freq de los labesl de sus adyacentes
             actual = claves[x]
             lista_aux = []
-            for adyacente in grafo.vertices[actual]: lista_aux.append(label[adyacente])
+            for adyacente in grafo.adyacentes(actual): lista_aux.append(label[adyacente])
             if max_freq(lista_aux) == None: continue
             label[actual] = max_freq(lista_aux)
     #recorro el dicc label y voy metiendo las comunidades(que son listas) en una lista de comunidades
@@ -128,20 +127,20 @@ def comunidades(grafo, n):
         if len(comunidad) >= n:
             print("Comunidad " + str(contador) + ": " + str(comunidad))
             contador += 1
-
+"""
 #FUNCIONA OK
 def cfc(grafo):
     visitados = set()
+    en_cfs = set()
     orden = {}
     lista1 = []
-    lista2 = []
+    pila2 = Deque()
     cfcs = []
-    en_cfs = set()
     resultado = ""
     for vertice in grafo.vertices:
         if vertice not in visitados:
             orden[vertice] = 0
-            dfs_cfc(grafo.vertices, vertice, visitados, orden, lista1, lista2, cfcs, en_cfs)
+            dfs_cfc(grafo, vertice, visitados, orden, lista1, pila2, cfcs, en_cfs)
     for index, cfc in enumerate(cfcs):
         resultado = "CFC " + str(index + 1) + ": "
         for index,num in enumerate(cfc): 
@@ -158,5 +157,6 @@ def divulgar(grafo, delincuente, n):
     resultado = resultado[:-2]
     return resultado
     
-
+start_time = time.time()
 main()
+print("---- %s secons ----" % (time.time() - start_time))
