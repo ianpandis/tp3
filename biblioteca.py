@@ -52,19 +52,14 @@ def dfs_cfc(grafo, vertice, visitados, orden, lista1, pila2, cfcs, en_cfs):
 def random_walks(grafo, origen, largo):
     recorrido = {}
     v = origen
-    for i in range(1, largo):
-        if not v in recorrido: 
-            recorrido[v] = 1
+    walks = random.choices(grafo.adyacentes(v), k = largo)
+    for vertice in walks:
+        if not vertice in recorrido:
+            recorrido[vertice] = 1
         else: 
-            recorrido[v] += 1
-        adyacentes = grafo.adyacentes(v)
-        if len(adyacentes) > 0: 
-            v = random.choice(adyacentes)
-        else:
-            break
+            recorrido[vertice] += 1
     return recorrido
-
-
+    
 def bfs(grafo, vertice_inicial):
     visitados = set()
     distancia = {}
@@ -96,13 +91,13 @@ def ciclo_n(grafo, origen, largo):
 
 def _ciclo_n(grafo, v, largo, visitados, respuesta, principio, cantidad): 
     #if len(respuesta)-1 > largo: return False
+    if cantidad-1 > largo: return False
     adyacentes = grafo.adyacentes(v)
     if cantidad == largo:
         if principio in adyacentes:
             respuesta.append(principio)
             return respuesta
         return False
-    if cantidad-1 > largo: return False
     for w in adyacentes:
         if w in visitados:continue
         respuesta.append(w)
@@ -116,25 +111,5 @@ def _ciclo_n(grafo, v, largo, visitados, respuesta, principio, cantidad):
         #else:
         #    if v == principio and len(respuesta)-1 == largo: return respuesta
     return False
-
-def orden_topologico(grafo):
-    grados = {}
-    resultado = []
-    cola = Deque()
-    for vertice in grafo.vertices: grados[vertice] = 0
-    for vertice in grafo.vertices:
-        for adyacente in vertice:
-            grados[adyacente] += 1
-    for vertice in grafo.vertices:
-        if grados[vertice] == 0: cola.add(vertice)
-    while maxlen(cola):
-        actual = cola.popleft()
-        resultado.append(actual)
-        for adyacente in actual:
-            grados[adyacente] -= 1
-            if grados[adyacente] == 0: cola.add(adyacente)
-    if len(resultado) == len(grafo):
-        return resultado 
-    return None #tiene ciclo
 
         

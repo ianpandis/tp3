@@ -6,7 +6,7 @@ import random
 import collections
 from biblioteca import *
 import operator
-CANT_ITERACIONES_COMUNIDADES = 5
+CANT_ITERACIONES_COMUNIDADES = 10
 
 def main():
     archivo = cargar_grafo(sys.argv[1])
@@ -113,6 +113,7 @@ def comunidades(grafo, n):
             for adyacente in grafo.adyacentes(actual): lista_aux.append(label[adyacente])
             if max_freq(lista_aux) == None: continue
             label[actual] = max_freq(lista_aux)
+    print(label)
     #recorro el dicc label y voy metiendo las comunidades(que son listas) en una lista de comunidades
     dicc_de_comunidades = {}
     for vertice in label:
@@ -145,7 +146,7 @@ def cfc(grafo):
             dfs_cfc(grafo, vertice, visitados, orden, lista1, pila2, cfcs, en_cfs)
     for index, cfc in enumerate(cfcs):
         resultado = "CFC " + str(index + 1) + ": "
-        for index,num in enumerate(cfc): 
+        for num in cfc: 
             resultado += str(num) + ", "
         print(resultado[:-2])
         
